@@ -19,6 +19,22 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# === Maven 빌드 결과 ===
+/target/                ❗️ 매우 중요
+
+# === VS Code 설정 ===
+.vscode/                ❗️ VS Code 환경이라면 무조건
+
+# === 환경 변수 / 민감 정보 ===
+.env                    ❗️ API 키, DB 정보 보호용
+.env.*                 
+
+# === OS / 파일 시스템 ===
+.DS_Store
+Thumbs.db
+*.tmp
+
