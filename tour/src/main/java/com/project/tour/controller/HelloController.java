@@ -17,4 +17,5 @@ public class HelloController {
     public String bye() {
         return "집으로 가버렸~~~~";
     }
+
 }
