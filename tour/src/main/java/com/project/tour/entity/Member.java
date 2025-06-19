@@ -1,29 +1,40 @@
+// 📁 src/main/java/com/project/tour/entity/Member.java
 package com.project.tour.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "MEMBER")
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    @Column(name = "member_id")
+    private Long member_id;
 
-    private String name;
-    private String password;
+    @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "nickname", nullable = true)
+    private String nickname;
+
+    @Column(name = "profile_image", nullable = true)
+    private String profileImage;
+
+    @Column(name = "gender", nullable = false)
+    private String gender;
+
+    @Column(name = "birthday", nullable = true)
+    private String birthday;
+
+    @Column(name = "phone_number", nullable = false)
+    private String phoneNumber;
 }
