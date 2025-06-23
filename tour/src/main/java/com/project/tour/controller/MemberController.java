@@ -2,12 +2,16 @@
 package com.project.tour.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.tour.dto.FindIdRequestDto;
+import com.project.tour.dto.FindPasswordRequestDto;
+import com.project.tour.dto.FindResponseDto;
 import com.project.tour.dto.LoginRequestDto;
 import com.project.tour.dto.MemberInfoDto;
 import com.project.tour.dto.MemberRequestDto;
@@ -15,6 +19,7 @@ import com.project.tour.jwt.JwtUtil;
 import com.project.tour.repository.KakaoMemberRepository;
 import com.project.tour.repository.MemberRepository;
 import com.project.tour.service.MemberService;
+import com.project.tour.util.PasswordUtil;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/member")
 public class MemberController {
 
+    private final PasswordEncoder passwordEncoder; // 👈 이거 추가해야 함!
     private final MemberService memberService;
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
@@ -94,6 +100,32 @@ public class MemberController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("서버 오류: " + e.getMessage());
         }
+    }
+
+    // 📁 src/main/java/com/project/tour/controller/MemberController.java
+
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findId(@RequestBody FindIdRequestDto dto) {
+        return memberRepository.findByPhoneNumber(dto.getPhoneNumber())
+                .map(member -> ResponseEntity.ok(new FindResponseDto(member.getEmail())))
+                .orElse(ResponseEntity.status(404).body(new FindResponseDto("등록된 정보가 없습니다.")));
+    }
+
+    @PostMapping("/find/password")
+    public ResponseEntity<?> findPassword(@RequestBody FindPasswordRequestDto dto) {
+        return memberRepository.findByEmailAndPhoneNumber(dto.getEmail(), dto.getPhoneNumber())
+                .map(member -> {
+                    String tempPassword = PasswordUtil.generateTempPassword();
+                    member.setPassword(passwordEncoder.encode(tempPassword));
+                    memberRepository.save(member);
+
+                    // 메일은 생략하거나 나중에 추가
+                    System.out.println("임시 비밀번호: " + tempPassword); // 또는 로그 저장
+
+                    return ResponseEntity.ok(new FindResponseDto("임시 비밀번호가 발급되었습니다. 로그인 후 변경해주세요. " + tempPassword));
+                })
+                .orElse(ResponseEntity.status(404)
+                        .body(new FindResponseDto("이메일 또는 전화번호가 일치하지 않습니다.")));
     }
 
 }

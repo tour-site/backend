@@ -7,6 +7,7 @@ import lombok.*;
 @Entity
 @Table(name = "member") // 실제 DB 테이블 이름
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
