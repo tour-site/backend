@@ -1,20 +1,12 @@
 // 📁 src/main/java/com/project/tour/entity/Member.java
 package com.project.tour.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
+@Table(name = "member") // 실제 DB 테이블 이름
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,27 +14,26 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
     private Long member_id;
 
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
+    private String password; // bcrypt 인코딩된 비밀번호
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "nickname", nullable = true)
+    @Column(nullable = false)
     private String nickname;
 
-    @Column(name = "profile_image", nullable = true)
-    private String profileImage;
-
-    @Column(name = "gender", nullable = false)
+    @Column(nullable = true)
     private String gender;
 
-    @Column(name = "birthday", nullable = true)
-    private String birthday;
+    @Column(nullable = true)
+    private String birthday; // ex: 0101
 
-    @Column(name = "phone_number", nullable = false)
+    @Column(nullable = true, unique = true)
     private String phoneNumber;
 }
