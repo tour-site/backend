@@ -10,26 +10,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.tour.dto.TourDTO;
-import com.project.tour.entity.Tour;
-import com.project.tour.service.TourService;
+import com.project.tour.dto.FoodDTO;
+import com.project.tour.entity.Food;
+import com.project.tour.service.FoodService;
 
 @RestController
-@RequestMapping("/api/place")
+@RequestMapping("/api/foods")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class TourController {
-
+public class FoodController {
     @Autowired
-    private TourService tourService;
+    private FoodService foodService;
 
     @GetMapping("/{id}")
-    public TourDTO getTourById(@PathVariable Long id) {
-        Tour tour = tourService.getTourById(id);
-        return new TourDTO(tour);
+    public FoodDTO getFoodById(@PathVariable Long id) {
+        Food food = foodService.getFoodById(id);
+        return new FoodDTO(food);
     }
 
     @GetMapping
-    public List<Tour> getToursByCity(@RequestParam String city) {
-        return tourService.getToursByCity(city);
+    public List<Food> getFoodsByCity(@RequestParam String city) {
+        return foodService.getFoodsByCity(city);
     }
 }

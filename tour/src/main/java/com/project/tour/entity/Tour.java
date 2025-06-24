@@ -32,5 +32,7 @@ public class Tour {
     private String tour_cost;
     private String tour_img;
     private String tour_sum_img;
+    @Lob
+    @Column(name = "tour_detail")
     private String tour_detail;
 }

@@ -21,5 +21,11 @@ public class Stay {
 
     @Column(name = "tour_city")
     private String city;
+
+    private String stay_add;
+    private String stay_tell;
+    private String stay_site;
+    private String stay_park;
+    private String stay_img;
 }
 

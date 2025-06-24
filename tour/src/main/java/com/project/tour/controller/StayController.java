@@ -10,26 +10,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.tour.dto.TourDTO;
-import com.project.tour.entity.Tour;
-import com.project.tour.service.TourService;
+import com.project.tour.dto.StayDTO;
+import com.project.tour.entity.Stay;
+import com.project.tour.service.StayService;
 
 @RestController
-@RequestMapping("/api/place")
+@RequestMapping("/api/stays")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-public class TourController {
-
+public class StayController {
     @Autowired
-    private TourService tourService;
+    private StayService stayService;
 
     @GetMapping("/{id}")
-    public TourDTO getTourById(@PathVariable Long id) {
-        Tour tour = tourService.getTourById(id);
-        return new TourDTO(tour);
+    public StayDTO getStayById(@PathVariable Long id) {
+        Stay stay = stayService.getStayById(id);
+        return new StayDTO(stay);
     }
 
     @GetMapping
-    public List<Tour> getToursByCity(@RequestParam String city) {
-        return tourService.getToursByCity(city);
+    public List<Stay> getStaysByCity(@RequestParam String city) {
+        return stayService.getStaysByCity(city);
     }
 }
