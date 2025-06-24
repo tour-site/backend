@@ -16,7 +16,6 @@ import com.project.tour.service.TourService;
 
 @RestController
 @RequestMapping("/api/place")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class TourController {
 
     @Autowired
