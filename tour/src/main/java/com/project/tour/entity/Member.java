@@ -1,6 +1,12 @@
 // 📁 src/main/java/com/project/tour/entity/Member.java
 package com.project.tour.entity;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,4 +44,13 @@ public class Member {
 
     @Column(nullable = true, unique = true)
     private String phoneNumber;
+
+    // ✅ 가입일자
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private String role;
 }

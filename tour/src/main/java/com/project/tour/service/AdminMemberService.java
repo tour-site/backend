@@ -1,0 +1,52 @@
+// 📁 src/main/java/com/project/tour/service/AdminMemberService.java
+package com.project.tour.service;
+
+import com.project.tour.dto.MemberAdminDto;
+import com.project.tour.entity.Member;
+import com.project.tour.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class AdminMemberService {
+
+    private final MemberRepository memberRepository;
+
+    public List<MemberAdminDto> searchMembers(String keyword) {
+        List<Member> members = memberRepository
+                .findByNameContainingOrNicknameContainingOrPhoneNumberContaining(keyword, keyword, keyword);
+
+        return members.stream().map(m -> MemberAdminDto.builder()
+                .id(m.getId())
+                .email(m.getEmail())
+                .name(m.getName())
+                .nickname(m.getNickname())
+                .phoneNumber(m.getPhoneNumber())
+                .role(m.getRole())
+                .build()).collect(Collectors.toList());
+    }
+
+    public MemberAdminDto updateMember(Long id, MemberAdminDto dto) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+
+        member.setNickname(dto.getNickname());
+        member.setPhoneNumber(dto.getPhoneNumber());
+        member.setRole(dto.getRole());
+
+        Member saved = memberRepository.save(member);
+
+        return MemberAdminDto.builder()
+                .id(saved.getId())
+                .email(saved.getEmail())
+                .name(saved.getName())
+                .nickname(saved.getNickname())
+                .phoneNumber(saved.getPhoneNumber())
+                .role(saved.getRole())
+                .build();
+    }
+}
