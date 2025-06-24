@@ -64,12 +64,21 @@ public class MemberController {
         if ("USER".equals(role)) {
             return memberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(member -> ResponseEntity.ok(
-                            new MemberInfoDto(member.getName(), member.getEmail(), member.getNickname(), null)))
+                            new MemberInfoDto(
+                                    member.getId(), // ✅ id 추가
+                                    member.getName(),
+                                    member.getEmail(),
+                                    member.getNickname(),
+                                    null)))
                     .orElse(ResponseEntity.status(404).body("사용자 없음"));
         } else if ("KAKAO".equals(role)) {
             return kakaoMemberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(kakao -> ResponseEntity.ok(
-                            new MemberInfoDto(kakao.getName(), kakao.getEmail(), kakao.getNickname(),
+                            new MemberInfoDto(
+                                    kakao.getId(), // ✅ id 추가
+                                    kakao.getName(),
+                                    kakao.getEmail(),
+                                    kakao.getNickname(),
                                     kakao.getProfileImage())))
                     .orElse(ResponseEntity.status(404).body("사용자 없음"));
         }
