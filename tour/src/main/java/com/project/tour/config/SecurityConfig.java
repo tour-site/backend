@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/infra/**").permitAll()
                 .requestMatchers("/api/foods/**").permitAll()
                 .requestMatchers("/api/stays/**").permitAll()
+                .requestMatchers("/api/image-gallery/**").permitAll()
                 .requestMatchers("/api/board/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .anyRequest().authenticated()
