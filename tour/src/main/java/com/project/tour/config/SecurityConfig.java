@@ -47,10 +47,17 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/member/**").permitAll()
                 .requestMatchers("/api/place/**").permitAll()
+                .requestMatchers("/api/people/**").permitAll()
+                .requestMatchers("/api/infra/**").permitAll()
                 .requestMatchers("/api/foods/**").permitAll()
+                .requestMatchers("/api/people/**").permitAll()
+                .requestMatchers("/api/infra/**").permitAll()
                 .requestMatchers("/api/stays/**").permitAll()
+                .requestMatchers("/api/image-gallery/**").permitAll()
                 .requestMatchers("/api/board/**").permitAll()
+                .requestMatchers("/api/admin/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -62,7 +69,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("http://localhost:5173"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 프론트 도메인
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

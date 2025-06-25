@@ -20,4 +20,5 @@ public class BoardResponseDto {
     private Long writerId;
     private String writerType;
     private String writerNickname;
+    private String email;
 }

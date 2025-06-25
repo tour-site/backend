@@ -31,6 +31,7 @@ public class MemberService {
                 .gender(dto.getGender())
                 .birthday(dto.getBirthday())
                 .phoneNumber(dto.getPhoneNumber())
+                .role("ROLE_USER") // ✨ 기본 사용자 권한
                 .build();
 
         memberRepository.save(member);
