@@ -52,10 +52,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/infra/**").permitAll()
                 .requestMatchers("/api/stays/**").permitAll()
                 .requestMatchers("/api/board/**").permitAll()
+                .requestMatchers("/api/admin/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
-
-                // ✅ 관리자 전용 경로는 ADMIN 권한 필요
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
                 .and()

@@ -49,4 +49,26 @@ public class AdminMemberService {
                 .role(saved.getRole())
                 .build();
     }
+
+    // 📁 src/main/java/com/project/tour/service/AdminMemberService.java
+
+    public List<MemberAdminDto> getAllMembers() {
+        return memberRepository.findAll().stream()
+                .map(m -> MemberAdminDto.builder()
+                        .id(m.getId())
+                        .email(m.getEmail())
+                        .name(m.getName())
+                        .nickname(m.getNickname())
+                        .phoneNumber(m.getPhoneNumber())
+                        .role(m.getRole())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public void deleteMember(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+        memberRepository.delete(member);
+    }
+
 }

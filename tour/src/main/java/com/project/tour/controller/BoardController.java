@@ -37,6 +37,7 @@ public class BoardController {
     public ResponseEntity<List<BoardResponseDto>> getAllBoards() {
         List<BoardResponseDto> result = boardService.findAll().stream().map(board -> {
             String nickname = getWriterNickname(board.getWriterId(), board.getWriterType());
+            String email = getWriterEmail(board.getWriterId(), board.getWriterType());
             return BoardResponseDto.builder()
                     .id(board.getId())
                     .title(board.getTitle())
@@ -48,6 +49,7 @@ public class BoardController {
                     .writerId(board.getWriterId())
                     .writerType(board.getWriterType())
                     .writerNickname(nickname)
+                    .email(email)
                     .build();
         }).collect(Collectors.toList());
         return ResponseEntity.ok(result);
@@ -59,7 +61,7 @@ public class BoardController {
         Board board = boardService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
         String nickname = getWriterNickname(board.getWriterId(), board.getWriterType());
-
+        String email = getWriterEmail(board.getWriterId(), board.getWriterType());
         return ResponseEntity.ok(BoardResponseDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())
@@ -71,6 +73,7 @@ public class BoardController {
                 .writerId(board.getWriterId())
                 .writerType(board.getWriterType())
                 .writerNickname(nickname)
+                .email(email)
                 .build());
     }
 
@@ -102,13 +105,58 @@ public class BoardController {
 
     // 📌 게시글 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto dto) {
+    public ResponseEntity<?> updateBoard(@PathVariable Long id, @RequestBody BoardRequestDto dto,
+            HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        if (token == null || !jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("인증 실패");
+        }
+        String email = jwtUtil.getUserEmail(token);
+        String role = jwtUtil.getUserRole(token);
+        Long loginId;
+        if ("USER".equals(role)) {
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+            loginId = member.getId();
+        } else if ("KAKAO".equals(role)) {
+            KakaoMember kakao = kakaoMemberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+            loginId = kakao.getId();
+        } else {
+            return ResponseEntity.status(403).body("권한 없음");
+        }
+        Board board = boardService.findById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        if (!loginId.equals(board.getWriterId()) || !role.equals(board.getWriterType())) {
+            return ResponseEntity.status(403).body("본인만 수정할 수 있습니다.");
+        }
         return ResponseEntity.ok(boardService.updateBoard(id, dto));
     }
 
     // 📌 게시글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(@PathVariable Long id) {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long id, HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        if (token == null || !jwtUtil.validateToken(token)) {
+            return ResponseEntity.status(401).body("인증 실패");
+        }
+        String email = jwtUtil.getUserEmail(token);
+        String role = jwtUtil.getUserRole(token);
+        Long loginId;
+        if ("USER".equals(role)) {
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+            loginId = member.getId();
+        } else if ("KAKAO".equals(role)) {
+            KakaoMember kakao = kakaoMemberRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
+            loginId = kakao.getId();
+        } else {
+            return ResponseEntity.status(403).body("권한 없음");
+        }
+        Board board = boardService.findById(id).orElseThrow(() -> new IllegalArgumentException("게시글 없음"));
+        if (!loginId.equals(board.getWriterId()) || !role.equals(board.getWriterType())) {
+            return ResponseEntity.status(403).body("본인만 삭제할 수 있습니다.");
+        }
         boardService.deleteBoard(id);
         return ResponseEntity.ok().build();
     }
@@ -239,7 +287,7 @@ public class BoardController {
         return ResponseEntity.ok(boardLikeService.countLikes(id));
     }
 
-    // 📌 작성자 닉네임 조회 유틸
+    // 📌 작성자 닉네임/이메일 조회 유틸
     private String getWriterNickname(Long writerId, String writerType) {
         if ("USER".equals(writerType)) {
             return memberRepository.findById(writerId).map(Member::getNickname).orElse("탈퇴한 회원");
@@ -247,6 +295,16 @@ public class BoardController {
             return kakaoMemberRepository.findById(writerId).map(KakaoMember::getNickname).orElse("탈퇴한 회원");
         } else {
             return "알 수 없음";
+        }
+    }
+
+    private String getWriterEmail(Long writerId, String writerType) {
+        if ("USER".equals(writerType)) {
+            return memberRepository.findById(writerId).map(Member::getEmail).orElse("");
+        } else if ("KAKAO".equals(writerType)) {
+            return kakaoMemberRepository.findById(writerId).map(KakaoMember::getEmail).orElse("");
+        } else {
+            return "";
         }
     }
 }
