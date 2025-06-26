@@ -75,11 +75,11 @@ public class BoardService {
     }
 
     private String getWriterNickname(Long writerId, String writerType) {
-        if ("USER".equals(writerType)) {
+        if ("ROLE_USER".equals(writerType)) {
             return memberRepository.findById(writerId)
                     .map(Member::getNickname)
                     .orElse("탈퇴한 회원");
-        } else if ("KAKAO".equals(writerType)) {
+        } else if ("ROLE_KAKAO".equals(writerType)) {
             return kakaoMemberRepository.findById(writerId)
                     .map(KakaoMember::getNickname)
                     .orElse("탈퇴한 회원");
