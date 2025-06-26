@@ -58,6 +58,7 @@ public class BoardService {
                 .stream()
                 .map(board -> {
                     String nickname = getWriterNickname(board.getWriterId(), board.getWriterType());
+                    String email = getWriterEmail(board.getWriterId(), board.getWriterType());
                     return BoardResponseDto.builder()
                             .id(board.getId())
                             .title(board.getTitle())
@@ -67,6 +68,7 @@ public class BoardService {
                             .writerId(board.getWriterId())
                             .writerType(board.getWriterType())
                             .writerNickname(nickname)
+                            .email(email)
                             .likeCount(board.getLikes().size())
                             .commentCount(board.getComments().size())
                             .build();
@@ -75,7 +77,7 @@ public class BoardService {
     }
 
     private String getWriterNickname(Long writerId, String writerType) {
-        if ("ROLE_USER".equals(writerType)) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
             return memberRepository.findById(writerId)
                     .map(Member::getNickname)
                     .orElse("탈퇴한 회원");
@@ -85,6 +87,20 @@ public class BoardService {
                     .orElse("탈퇴한 회원");
         } else {
             return "알 수 없음";
+        }
+    }
+
+    private String getWriterEmail(Long writerId, String writerType) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
+            return memberRepository.findById(writerId)
+                    .map(Member::getEmail)
+                    .orElse("");
+        } else if ("ROLE_KAKAO".equals(writerType)) {
+            return kakaoMemberRepository.findById(writerId)
+                    .map(KakaoMember::getEmail)
+                    .orElse("");
+        } else {
+            return "";
         }
     }
 }

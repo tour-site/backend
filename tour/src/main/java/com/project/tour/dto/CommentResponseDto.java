@@ -15,4 +15,5 @@ public class CommentResponseDto {
     private Long writerId; // ✅ 추가
     private String writerType; // ✅ 추가
     private String writerNickname; // ✅ 추가
+    private String email; // ✅ 추가
 }

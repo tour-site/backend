@@ -31,13 +31,17 @@ public class AdminMemberService {
                                 .build()).collect(Collectors.toList());
         }
 
+        private String formatRole(String role) {
+                return (role != null && role.startsWith("ROLE_")) ? role : "ROLE_" + (role == null ? "USER" : role);
+        }
+
         public MemberAdminDto updateMember(Long id, MemberAdminDto dto) {
                 Member member = memberRepository.findById(id)
                                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
                 member.setNickname(dto.getNickname());
                 member.setPhoneNumber(dto.getPhoneNumber());
-                member.setRole(dto.getRole()); // prefix 자동 부여 제거
+                member.setRole(formatRole(dto.getRole())); // 항상 ROLE_ prefix
 
                 Member saved = memberRepository.save(member);
 

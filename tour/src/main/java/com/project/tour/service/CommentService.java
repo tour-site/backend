@@ -61,6 +61,7 @@ public class CommentService {
                 .stream()
                 .map(comment -> {
                     String nickname = getWriterNickname(writerId, writerType);
+                    String email = getWriterEmail(writerId, writerType);
                     return CommentResponseDto.builder()
                             .id(comment.getId())
                             .content(comment.getContent())
@@ -68,13 +69,14 @@ public class CommentService {
                             .writerId(comment.getWriterId())
                             .writerType(comment.getWriterType())
                             .writerNickname(nickname)
+                            .email(email)
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
     private String getWriterNickname(Long writerId, String writerType) {
-        if ("ROLE_USER".equals(writerType)) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
             return memberRepository.findById(writerId)
                     .map(Member::getNickname)
                     .orElse("탈퇴한 회원");
@@ -84,6 +86,20 @@ public class CommentService {
                     .orElse("탈퇴한 회원");
         } else {
             return "알 수 없음";
+        }
+    }
+
+    private String getWriterEmail(Long writerId, String writerType) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
+            return memberRepository.findById(writerId)
+                    .map(Member::getEmail)
+                    .orElse("");
+        } else if ("ROLE_KAKAO".equals(writerType)) {
+            return kakaoMemberRepository.findById(writerId)
+                    .map(KakaoMember::getEmail)
+                    .orElse("");
+        } else {
+            return "";
         }
     }
 }
