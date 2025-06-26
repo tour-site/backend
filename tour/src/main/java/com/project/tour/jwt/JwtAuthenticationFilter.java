@@ -41,26 +41,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = jwtUtil.getUserEmail(token);
             String role = jwtUtil.getUserRole(token); // ex: ROLE_USER, ROLE_ADMIN, ROLE_KAKAO
 
-            // 👇 Spring Security 권한 형식으로 맞추기
+            // ✅ 권한 부여 객체 생성
             List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
+            // ✅ 일반 회원 또는 관리자
             if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
-                memberRepository.findByEmail(email).ifPresent(user -> {
+                memberRepository.findByEmail(email).ifPresent(member -> {
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            user.getEmail(), null, authorities);
+                            member.getEmail(), null, authorities);
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 });
+
+                // ✅ 카카오 회원
             } else if ("ROLE_KAKAO".equals(role)) {
                 kakaoMemberRepository.findByEmail(email).ifPresent(kakao -> {
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            kakao.getEmail(), null, authorities);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(kakao.getEmail(),
+                            null, authorities);
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 });
             }
+            System.out.println("해당 로그인 한사람의 권한 : " + role);
         }
 
         filterChain.doFilter(request, response);
+
     }
 }

@@ -39,4 +39,5 @@ public class AdminMemberController {
     public void deleteMember(@PathVariable Long id) {
         adminMemberService.deleteMember(id);
     }
+
 }

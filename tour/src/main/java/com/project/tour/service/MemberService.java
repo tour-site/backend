@@ -41,7 +41,6 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    // ✅ 로그인
     public String login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일이 존재하지 않습니다."));
@@ -50,8 +49,8 @@ public class MemberService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        // 로그인 성공 시 JWT 토큰 반환
-        return jwtUtil.createToken(member.getEmail(), "USER");
+        // ✅ 실제 member의 role을 JWT에 넣음
+        return jwtUtil.createToken(member.getEmail(), member.getRole());
     }
 
     public Member findByEmail(String email) {

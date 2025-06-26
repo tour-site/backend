@@ -1,11 +1,8 @@
 // 📁 src/main/java/com/project/tour/config/SecurityConfig.java
 package com.project.tour.config;
 
-import com.project.tour.jwt.JwtAuthenticationFilter;
-import com.project.tour.jwt.JwtUtil;
-import com.project.tour.repository.KakaoMemberRepository;
-import com.project.tour.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -21,7 +18,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.project.tour.jwt.JwtAuthenticationFilter;
+import com.project.tour.jwt.JwtUtil;
+import com.project.tour.repository.KakaoMemberRepository;
+import com.project.tour.repository.MemberRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -55,7 +57,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/stays/**").permitAll()
                 .requestMatchers("/api/image-gallery/**").permitAll()
                 .requestMatchers("/api/board/**").permitAll()
-                .requestMatchers("/api/admin/**").permitAll()
+                // .requestMatchers("/api/admin/**").permitAll()
+                .requestMatchers("/admin/**").hasRole("ADMIN") // ADMIN만 접근
+
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
 
                 .anyRequest().authenticated()
