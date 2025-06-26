@@ -1,4 +1,3 @@
-// 📁 src/main/java/com/project/tour/config/SecurityConfig.java
 package com.project.tour.config;
 
 import com.project.tour.jwt.JwtAuthenticationFilter;
@@ -39,23 +38,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/member/**").permitAll()
-                .requestMatchers("/api/place/**").permitAll()
-                .requestMatchers("/api/people/**").permitAll()
-                .requestMatchers("/api/infra/**").permitAll()
-                .requestMatchers("/api/foods/**").permitAll()
-                .requestMatchers("/api/stays/**").permitAll()
-                .requestMatchers("/api/board/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/member/**").permitAll()
+                        .requestMatchers("/api/place/**").permitAll()
+                        .requestMatchers("/api/people/**").permitAll()
+                        .requestMatchers("/api/infra/**").permitAll()
+                        .requestMatchers("/api/foods/**").permitAll()
+                        .requestMatchers("/api/stays/**").permitAll()
+                        .requestMatchers("/api/board/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                        .anyRequest().authenticated());
+
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

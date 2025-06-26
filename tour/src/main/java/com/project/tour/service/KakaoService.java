@@ -24,18 +24,19 @@ public class KakaoService {
         Map<String, Object> result = new HashMap<>();
 
         String kakaoCategoryCode = "FD6"; // 음식점 코드
-        if ("stay".equals(category)) kakaoCategoryCode = "AD5"; // 숙소
+        if ("stay".equals(category))
+            kakaoCategoryCode = "AD5"; // 숙소
 
         String apiUrl = "https://dapi.kakao.com/v2/local/search/category.json";
         String apiKey = "KakaoAK 5f4736719b17b503c8996d32b4c7534d";
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiUrl)
-            .queryParam("category_group_code", kakaoCategoryCode)
-            .queryParam("x", "129.0756") // 부산 중심 좌표 (경도)
-            .queryParam("y", "35.1796")  // 위도
-            .queryParam("radius", 5000)  // 반경 5km
-            .queryParam("size", 10)
-            .queryParam("page", page);
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(apiUrl)
+                .queryParam("category_group_code", kakaoCategoryCode)
+                .queryParam("x", "129.0756")
+                .queryParam("y", "35.1796")
+                .queryParam("radius", 5000)
+                .queryParam("size", 10)
+                .queryParam("page", page);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", apiKey);
@@ -43,16 +44,19 @@ public class KakaoService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<JsonNode> response = restTemplate.exchange(
-            builder.toUriString(),
-            HttpMethod.GET,
-            entity,
-            JsonNode.class
-        );
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                JsonNode.class);
 
         JsonNode body = response.getBody();
+        if (body == null) {
+            throw new RuntimeException("Kakao API response body is null");
+        }
+
         JsonNode documents = body.get("documents");
         JsonNode meta = body.get("meta");
-        boolean isEnd = meta.get("is_end").asBoolean(); 
+        boolean isEnd = meta.get("is_end").asBoolean();
 
         for (JsonNode doc : documents) {
             String name = doc.get("place_name").asText();
