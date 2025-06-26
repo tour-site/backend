@@ -216,6 +216,9 @@ public class BoardController {
                         .id(c.getId())
                         .content(c.getContent())
                         .createdAt(c.getCreatedAt())
+                        .writerId(c.getWriterId())
+                        .writerType(c.getWriterType())
+                        .writerNickname(getWriterNickname(c.getWriterId(), c.getWriterType()))
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(result);

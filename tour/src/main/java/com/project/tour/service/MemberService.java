@@ -35,10 +35,14 @@ public class MemberService {
                 .gender(dto.getGender())
                 .birthday(dto.getBirthday())
                 .phoneNumber(dto.getPhoneNumber())
-                .role("USER") // ✨ 기본 사용자 권한
+                .role(formatRole(dto.getRole())) // 항상 ROLE_ prefix
                 .build();
 
         memberRepository.save(member);
+    }
+
+    private String formatRole(String role) {
+        return (role != null && role.startsWith("ROLE_")) ? role : "ROLE_" + (role == null ? "USER" : role);
     }
 
     public String login(String email, String password) {

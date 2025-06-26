@@ -2,19 +2,27 @@
 package com.project.tour.service;
 
 import com.project.tour.dto.BoardRequestDto;
+import com.project.tour.dto.BoardResponseDto;
 import com.project.tour.entity.Board;
+import com.project.tour.entity.KakaoMember;
+import com.project.tour.entity.Member;
 import com.project.tour.repository.BoardRepository;
+import com.project.tour.repository.KakaoMemberRepository;
+import com.project.tour.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
+    private final KakaoMemberRepository kakaoMemberRepository;
 
     public List<Board> findAll() {
         return boardRepository.findAll();
@@ -43,5 +51,40 @@ public class BoardService {
 
     public void deleteBoard(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public List<BoardResponseDto> findByWriter(Long writerId, String writerType) {
+        return boardRepository.findByWriterIdAndWriterType(writerId, writerType)
+                .stream()
+                .map(board -> {
+                    String nickname = getWriterNickname(board.getWriterId(), board.getWriterType());
+                    return BoardResponseDto.builder()
+                            .id(board.getId())
+                            .title(board.getTitle())
+                            .content(board.getContent())
+                            .createdAt(board.getCreatedAt())
+                            .updatedAt(board.getUpdatedAt())
+                            .writerId(board.getWriterId())
+                            .writerType(board.getWriterType())
+                            .writerNickname(nickname)
+                            .likeCount(board.getLikes().size())
+                            .commentCount(board.getComments().size())
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private String getWriterNickname(Long writerId, String writerType) {
+        if ("USER".equals(writerType)) {
+            return memberRepository.findById(writerId)
+                    .map(Member::getNickname)
+                    .orElse("탈퇴한 회원");
+        } else if ("KAKAO".equals(writerType)) {
+            return kakaoMemberRepository.findById(writerId)
+                    .map(KakaoMember::getNickname)
+                    .orElse("탈퇴한 회원");
+        } else {
+            return "알 수 없음";
+        }
     }
 }

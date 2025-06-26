@@ -61,7 +61,7 @@ public class MemberController {
         String email = jwtUtil.getUserEmail(token);
         String role = jwtUtil.getUserRole(token);
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role)) {
             return memberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(member -> ResponseEntity.ok(
                             new MemberInfoDto(
@@ -71,7 +71,7 @@ public class MemberController {
                                     member.getNickname(),
                                     null)))
                     .orElse(ResponseEntity.status(404).body("사용자 없음"));
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             return kakaoMemberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(kakao -> ResponseEntity.ok(
                             new MemberInfoDto(
