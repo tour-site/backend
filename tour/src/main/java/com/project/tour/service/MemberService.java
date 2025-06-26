@@ -1,13 +1,16 @@
 // 📁 src/main/java/com/project/tour/service/MemberService.java
 package com.project.tour.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.project.tour.dto.MemberRequestDto;
 import com.project.tour.entity.Member;
 import com.project.tour.jwt.JwtUtil;
 import com.project.tour.repository.MemberRepository;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class MemberService {
     private final JwtUtil jwtUtil;
 
     // ✅ 회원가입
+    @Transactional
     public void signup(MemberRequestDto dto) {
         if (memberRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
@@ -31,7 +35,7 @@ public class MemberService {
                 .gender(dto.getGender())
                 .birthday(dto.getBirthday())
                 .phoneNumber(dto.getPhoneNumber())
-                .role("ROLE_USER") // ✨ 기본 사용자 권한
+                .role("USER") // ✨ 기본 사용자 권한
                 .build();
 
         memberRepository.save(member);
