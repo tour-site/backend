@@ -59,27 +59,31 @@ public class MemberController {
         }
 
         String email = jwtUtil.getUserEmail(token);
-        String role = jwtUtil.getUserRole(token);
+        String role = jwtUtil.getUserRole(token); // ROLE_USER, ROLE_ADMIN, ROLE_KAKAO
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             return memberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(member -> ResponseEntity.ok(
                             new MemberInfoDto(
-                                    member.getId(), // ✅ id 추가
+                                    member.getId(),
                                     member.getName(),
                                     member.getEmail(),
                                     member.getNickname(),
-                                    null)))
+                                    null, // 일반 회원은 프로필 이미지 없음
+                                    member.getRole() // ✅ 역할 포함
+                            )))
                     .orElse(ResponseEntity.status(404).body("사용자 없음"));
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             return kakaoMemberRepository.findByEmail(email)
                     .<ResponseEntity<?>>map(kakao -> ResponseEntity.ok(
                             new MemberInfoDto(
-                                    kakao.getId(), // ✅ id 추가
+                                    kakao.getId(),
                                     kakao.getName(),
                                     kakao.getEmail(),
                                     kakao.getNickname(),
-                                    kakao.getProfileImage())))
+                                    kakao.getProfileImage(),
+                                    role // ✅ 카카오도 역할 포함
+                            )))
                     .orElse(ResponseEntity.status(404).body("사용자 없음"));
         }
 

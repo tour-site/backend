@@ -14,61 +14,66 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AdminMemberService {
 
-    private final MemberRepository memberRepository;
+        private final MemberRepository memberRepository;
 
-    public List<MemberAdminDto> searchMembers(String keyword) {
-        List<Member> members = memberRepository
-                .findByNameContainingOrNicknameContainingOrPhoneNumberContaining(keyword, keyword, keyword);
+        public List<MemberAdminDto> searchMembers(String keyword) {
+                List<Member> members = memberRepository
+                                .findByNameContainingOrNicknameContainingOrPhoneNumberContaining(keyword, keyword,
+                                                keyword);
 
-        return members.stream().map(m -> MemberAdminDto.builder()
-                .id(m.getId())
-                .email(m.getEmail())
-                .name(m.getName())
-                .nickname(m.getNickname())
-                .phoneNumber(m.getPhoneNumber())
-                .role(m.getRole())
-                .build()).collect(Collectors.toList());
-    }
+                return members.stream().map(m -> MemberAdminDto.builder()
+                                .id(m.getId())
+                                .email(m.getEmail())
+                                .name(m.getName())
+                                .nickname(m.getNickname())
+                                .phoneNumber(m.getPhoneNumber())
+                                .role(m.getRole())
+                                .build()).collect(Collectors.toList());
+        }
 
-    public MemberAdminDto updateMember(Long id, MemberAdminDto dto) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+        private String formatRole(String role) {
+                return (role != null && role.startsWith("ROLE_")) ? role : "ROLE_" + (role == null ? "USER" : role);
+        }
 
-        member.setNickname(dto.getNickname());
-        member.setPhoneNumber(dto.getPhoneNumber());
-        member.setRole(dto.getRole());
+        public MemberAdminDto updateMember(Long id, MemberAdminDto dto) {
+                Member member = memberRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
-        Member saved = memberRepository.save(member);
+                member.setNickname(dto.getNickname());
+                member.setPhoneNumber(dto.getPhoneNumber());
+                member.setRole(formatRole(dto.getRole())); // 항상 ROLE_ prefix
 
-        return MemberAdminDto.builder()
-                .id(saved.getId())
-                .email(saved.getEmail())
-                .name(saved.getName())
-                .nickname(saved.getNickname())
-                .phoneNumber(saved.getPhoneNumber())
-                .role(saved.getRole())
-                .build();
-    }
+                Member saved = memberRepository.save(member);
 
-    // 📁 src/main/java/com/project/tour/service/AdminMemberService.java
+                return MemberAdminDto.builder()
+                                .id(saved.getId())
+                                .email(saved.getEmail())
+                                .name(saved.getName())
+                                .nickname(saved.getNickname())
+                                .phoneNumber(saved.getPhoneNumber())
+                                .role(saved.getRole())
+                                .build();
+        }
 
-    public List<MemberAdminDto> getAllMembers() {
-        return memberRepository.findAll().stream()
-                .map(m -> MemberAdminDto.builder()
-                        .id(m.getId())
-                        .email(m.getEmail())
-                        .name(m.getName())
-                        .nickname(m.getNickname())
-                        .phoneNumber(m.getPhoneNumber())
-                        .role(m.getRole())
-                        .build())
-                .collect(Collectors.toList());
-    }
+        // 📁 src/main/java/com/project/tour/service/AdminMemberService.java
 
-    public void deleteMember(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-        memberRepository.delete(member);
-    }
+        public List<MemberAdminDto> getAllMembers() {
+                return memberRepository.findAll().stream()
+                                .map(m -> MemberAdminDto.builder()
+                                                .id(m.getId())
+                                                .email(m.getEmail())
+                                                .name(m.getName())
+                                                .nickname(m.getNickname())
+                                                .phoneNumber(m.getPhoneNumber())
+                                                .role(m.getRole())
+                                                .build())
+                                .collect(Collectors.toList());
+        }
+
+        public void deleteMember(Long id) {
+                Member member = memberRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+                memberRepository.delete(member);
+        }
 
 }

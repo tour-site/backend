@@ -19,6 +19,7 @@ public class MemberRequestDto {
     private String birthday; // 선택
     private String phoneNumber; // 선택
     private String profileImage; // 선택
+    private String role; // 권한 (선택, 없으면 기본 USER)
 
     public MemberRequestDto(Member member) {
         this.name = member.getName();

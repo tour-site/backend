@@ -89,7 +89,7 @@ public class BoardController {
         String role = jwtUtil.getUserRole(token);
         Long writerId;
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
             writerId = member.getId();
@@ -114,11 +114,11 @@ public class BoardController {
         String email = jwtUtil.getUserEmail(token);
         String role = jwtUtil.getUserRole(token);
         Long loginId;
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
             loginId = member.getId();
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             KakaoMember kakao = kakaoMemberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
             loginId = kakao.getId();
@@ -142,11 +142,11 @@ public class BoardController {
         String email = jwtUtil.getUserEmail(token);
         String role = jwtUtil.getUserRole(token);
         Long loginId;
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
             loginId = member.getId();
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             KakaoMember kakao = kakaoMemberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("회원 없음"));
             loginId = kakao.getId();
@@ -181,12 +181,12 @@ public class BoardController {
         Long writerId;
         String nickname;
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
             writerId = member.getId();
             nickname = member.getNickname();
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             KakaoMember kakao = kakaoMemberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
             writerId = kakao.getId();
@@ -216,6 +216,9 @@ public class BoardController {
                         .id(c.getId())
                         .content(c.getContent())
                         .createdAt(c.getCreatedAt())
+                        .writerId(c.getWriterId())
+                        .writerType(c.getWriterType())
+                        .writerNickname(getWriterNickname(c.getWriterId(), c.getWriterType()))
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(result);
@@ -233,10 +236,10 @@ public class BoardController {
         String role = jwtUtil.getUserRole(token);
         Long writerId;
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             writerId = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자 없음")).getId();
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             writerId = kakaoMemberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("카카오 사용자 없음")).getId();
         } else {
@@ -262,10 +265,10 @@ public class BoardController {
         String role = jwtUtil.getUserRole(token); // "USER" 또는 "KAKAO"
         Long writerId;
 
-        if ("USER".equals(role)) {
+        if ("ROLE_USER".equals(role) || "ROLE_ADMIN".equals(role)) {
             writerId = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("사용자 없음")).getId();
-        } else if ("KAKAO".equals(role)) {
+        } else if ("ROLE_KAKAO".equals(role)) {
             writerId = kakaoMemberRepository.findByEmail(email)
                     .orElseThrow(() -> new IllegalArgumentException("카카오 사용자 없음")).getId();
         } else {
@@ -289,9 +292,9 @@ public class BoardController {
 
     // 📌 작성자 닉네임/이메일 조회 유틸
     private String getWriterNickname(Long writerId, String writerType) {
-        if ("USER".equals(writerType)) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
             return memberRepository.findById(writerId).map(Member::getNickname).orElse("탈퇴한 회원");
-        } else if ("KAKAO".equals(writerType)) {
+        } else if ("ROLE_KAKAO".equals(writerType)) {
             return kakaoMemberRepository.findById(writerId).map(KakaoMember::getNickname).orElse("탈퇴한 회원");
         } else {
             return "알 수 없음";
@@ -299,9 +302,9 @@ public class BoardController {
     }
 
     private String getWriterEmail(Long writerId, String writerType) {
-        if ("USER".equals(writerType)) {
+        if ("ROLE_USER".equals(writerType) || "ROLE_ADMIN".equals(writerType)) {
             return memberRepository.findById(writerId).map(Member::getEmail).orElse("");
-        } else if ("KAKAO".equals(writerType)) {
+        } else if ("ROLE_KAKAO".equals(writerType)) {
             return kakaoMemberRepository.findById(writerId).map(KakaoMember::getEmail).orElse("");
         } else {
             return "";

@@ -23,7 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return User.builder()
                 .username(member.getEmail())
                 .password("") // 비밀번호는 카카오 로그인에서는 사용하지 않음
-                .roles("KAKAO") // 권한 설정 (필요시 DB에서 받아오거나 고정)
+                .roles("ROLE_KAKAO") // 권한 설정 (필요시 DB에서 받아오거나 고정)
                 .build();
     }
 }

@@ -34,7 +34,7 @@ public class AuthController {
         KakaoMember member = kakaoMemberService.registerIfNotExists(userInfo);
 
         // 4️⃣ JWT 토큰 생성
-        String token = jwtUtil.createToken(member.getEmail(), "KAKAO");
+        String token = jwtUtil.createToken(member.getEmail(), "ROLE_KAKAO");
 
         // 5️⃣ 쿠키에 저장
         Cookie cookie = new Cookie("token", token);

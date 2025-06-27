@@ -16,4 +16,5 @@ public class MemberInfoDto {
     private String email;
     private String nickname;
     private String profileImage; // ✅ 일반 회원은 null, 카카오 회원은 URL
+    private String role; // ✅ 추가
 }
