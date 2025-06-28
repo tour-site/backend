@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,6 +27,7 @@ import com.project.tour.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -58,13 +60,13 @@ public class SecurityConfig {
                 // "/public/**", "/resources/**")
                 // .permitAll()
 
+                // ✅ 메인 페이지와 정적 파일 허용
                 .requestMatchers("/", "/index.html").permitAll()
                 .requestMatchers("/assets/**", "/img/**", "/font/**", "/css/**", "/js/**").permitAll()
                 .requestMatchers("/*.css", "/*.js", "/*.svg", "/*.ico", "/*.png", "/*.jpg", "/*.gif", "/*.ttf",
                         "/*.woff", "/*.woff2")
                 .permitAll()
                 .requestMatchers("/vite.svg", "/favicon.ico").permitAll()
-                // .requestMatchers("/oauth/callback/kakao").permitAll()
 
                 // ✅ 아래는 비인증 접근 허용 경로들
                 .requestMatchers("/oauth/callback/kakao/**").permitAll()
@@ -83,7 +85,8 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
                 // 그 외는 인증 필요
-                .anyRequest().authenticated()
+                // .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

@@ -35,6 +35,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        // ✅ 정적 파일 요청은 JWT 체크를 건너뜀
+        if (isStaticResource(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = jwtUtil.resolveToken(request);
         System.out.println("[JwtFilter] 🔍 추출된 토큰: " + token);
 
@@ -84,5 +90,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * 정적 파일 요청인지 확인
+     */
+    private boolean isStaticResource(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/assets/") ||
+                path.startsWith("/img/") ||
+                path.startsWith("/font/") ||
+                path.startsWith("/css/") ||
+                path.startsWith("/js/") ||
+                path.endsWith(".css") ||
+                path.endsWith(".js") ||
+                path.endsWith(".svg") ||
+                path.endsWith(".ico") ||
+                path.endsWith(".png") ||
+                path.endsWith(".jpg") ||
+                path.endsWith(".gif") ||
+                path.endsWith(".ttf") ||
+                path.endsWith(".woff") ||
+                path.endsWith(".woff2") ||
+                path.equals("/") ||
+                path.equals("/index.html") ||
+                path.equals("/favicon.ico");
     }
 }

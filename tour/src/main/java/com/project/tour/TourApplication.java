@@ -14,5 +14,6 @@ public class TourApplication {
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul")); // ✅ JVM 타임존 설정
         SpringApplication.run(TourApplication.class, args);
+        System.out.println("✅ 서버 실행됨");
     }
 }
