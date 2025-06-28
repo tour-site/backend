@@ -49,7 +49,25 @@ public class SecurityConfig {
                 // 🔐 인증 필요한 요청
                 .requestMatchers(HttpMethod.PATCH, "/api/mypage/nickname").hasAnyRole("USER", "ADMIN")
 
+                // // ✅ 정적 파일 및 메인페이지 허용 (모든 경로 포함)
+                // .requestMatchers(
+                // "/", "/index.html", "/favicon.ico", "/manifest.json",
+                // "/vite.svg", "/logo192.png", "/robots.txt",
+                // "/assets/**", "/static/**", "/css/**", "/js/**", "/img/**",
+                // "/fonts/**", "/font/**", "/images/**",
+                // "/public/**", "/resources/**")
+                // .permitAll()
+
+                .requestMatchers("/", "/index.html").permitAll()
+                .requestMatchers("/assets/**", "/img/**", "/font/**", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/*.css", "/*.js", "/*.svg", "/*.ico", "/*.png", "/*.jpg", "/*.gif", "/*.ttf",
+                        "/*.woff", "/*.woff2")
+                .permitAll()
+                .requestMatchers("/vite.svg", "/favicon.ico").permitAll()
+                // .requestMatchers("/oauth/callback/kakao").permitAll()
+
                 // ✅ 아래는 비인증 접근 허용 경로들
+                .requestMatchers("/oauth/callback/kakao/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/member/**").permitAll()
                 .requestMatchers("/api/place/**").permitAll()
@@ -77,6 +95,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 프론트엔드 주소
+        // config.setAllowedOriginPatterns(List.of("http://localhost:8321")); // 프론트엔드
+        // 주소
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setExposedHeaders(List.of("Authorization")); // 프론트에서 읽을 수 있는 헤더
