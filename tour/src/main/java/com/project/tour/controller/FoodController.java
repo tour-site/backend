@@ -16,7 +16,6 @@ import com.project.tour.service.FoodService;
 
 @RestController
 @RequestMapping("/api/foods")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class FoodController {
     @Autowired
     private FoodService foodService;

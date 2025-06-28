@@ -76,7 +76,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 프론트엔드 주소
+        config.setAllowedOriginPatterns(List.of("http://localhost:8321")); // 프론트엔드 주소
+        // config.setAllowedOriginPatterns(List.of("http://localhost:5173")); // 프론트엔드
+        // 주소
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setExposedHeaders(List.of("Authorization")); // 프론트에서 읽을 수 있는 헤더
