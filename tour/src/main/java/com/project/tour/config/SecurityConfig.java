@@ -51,15 +51,6 @@ public class SecurityConfig {
                 // 🔐 인증 필요한 요청
                 .requestMatchers(HttpMethod.PATCH, "/api/mypage/nickname").hasAnyRole("USER", "ADMIN")
 
-                // // ✅ 정적 파일 및 메인페이지 허용 (모든 경로 포함)
-                // .requestMatchers(
-                // "/", "/index.html", "/favicon.ico", "/manifest.json",
-                // "/vite.svg", "/logo192.png", "/robots.txt",
-                // "/assets/**", "/static/**", "/css/**", "/js/**", "/img/**",
-                // "/fonts/**", "/font/**", "/images/**",
-                // "/public/**", "/resources/**")
-                // .permitAll()
-
                 // ✅ 메인 페이지와 정적 파일 허용
                 .requestMatchers("/", "/index.html").permitAll()
                 .requestMatchers("/assets/**", "/img/**", "/font/**", "/css/**", "/js/**").permitAll()
